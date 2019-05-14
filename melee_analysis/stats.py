@@ -9,12 +9,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from datetime import datetime
+from datetime import timedelta
 
 
 class Stats():
-    def __init__(self):
+    def __init__(self, path):
         self.data = []
-        files = glob.glob('../distilled/*.json')
+        files = glob.glob('{}/*.json'.format(path))
         for file in files:
             with open(file, 'r') as f:
                 self.data.append(json.load(f))
@@ -41,6 +42,7 @@ class Stats():
         for game in self.data:
             dates.append(datetime.strptime(
                 game['date'], '%Y%m%d_%H%M%S'))
+        print(dates)
         return dates
 
     def plot_avg_death_perc(self, port):
@@ -51,12 +53,16 @@ class Stats():
             port), label='Port {}'.format(port))
 
         # auto space x ticks on graph
-        index = np.round(np.linspace(
-            0, len(self.dates) - 1, 10)).astype(int)
-        xticks = []
-        for idx in index:
-            xticks.append(self.dates[idx])
-        ax.set_xticks(xticks)
+        # index = np.round(np.linspace(
+        #     0, len(self.dates) - 1, 10)).astype(int)
+        # xticks = []
+        # for idx in index:
+        #     xticks.append(self.dates[idx])
+        # ax.set_xticks(xticks)
+        # ax.set_xticks(self.dates)
+        s_dates = sorted(self.dates)
+        ax.set_xlim([s_dates[0]-timedelta(minutes=10),
+                     s_dates[-1]+timedelta(minutes=10)])
 
         # plot settings
         ax.set_title('AVERAGE DEATH PERCENT', fontsize=8)
@@ -72,8 +78,7 @@ class Stats():
 
 
 def main():
-    stats = Stats()
-    stats.plot_avg_death_perc('0')
+    pass
 
 
 if __name__ == '__main__':
